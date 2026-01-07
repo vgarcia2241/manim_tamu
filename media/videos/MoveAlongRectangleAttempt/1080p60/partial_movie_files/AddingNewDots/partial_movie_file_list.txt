@@ -1,0 +1,2 @@
+# This file is used internally by FFMPEG.
+file 'file:/home/vivi/manim_summer_2025/media/videos/MoveAlongRectangleAttempt/1080p60/partial_movie_files/AddingNewDots/3977891868_2478584755_1251571321.mp4'

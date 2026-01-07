@@ -1,0 +1,2 @@
+# This file is used internally by FFMPEG.
+file 'file:/home/vivi/manim_summer_2025/media/videos/SpawnDeSpawn/1080p60/partial_movie_files/SettingAsCorners/3977891868_432050033_223132457.mp4'

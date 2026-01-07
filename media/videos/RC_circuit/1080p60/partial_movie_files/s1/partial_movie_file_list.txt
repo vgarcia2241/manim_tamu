@@ -1,0 +1,11 @@
+# This file is used internally by FFMPEG.
+file 'file:/home/vivi/manim_summer_2025/media/videos/RC_circuit/1080p60/partial_movie_files/s1/3977891868_2376408423_223132457.mp4'
+file 'file:/home/vivi/manim_summer_2025/media/videos/RC_circuit/1080p60/partial_movie_files/s1/2852726489_4071516364_1984504993.mp4'
+file 'file:/home/vivi/manim_summer_2025/media/videos/RC_circuit/1080p60/partial_movie_files/s1/2852726489_1847808638_2053443444.mp4'
+file 'file:/home/vivi/manim_summer_2025/media/videos/RC_circuit/1080p60/partial_movie_files/s1/2852726489_4071516364_2377942584.mp4'
+file 'file:/home/vivi/manim_summer_2025/media/videos/RC_circuit/1080p60/partial_movie_files/s1/2852726489_3093680682_1103366067.mp4'
+file 'file:/home/vivi/manim_summer_2025/media/videos/RC_circuit/1080p60/partial_movie_files/s1/2852726489_4071516364_65074621.mp4'
+file 'file:/home/vivi/manim_summer_2025/media/videos/RC_circuit/1080p60/partial_movie_files/s1/2852726489_3227128520_1978701757.mp4'
+file 'file:/home/vivi/manim_summer_2025/media/videos/RC_circuit/1080p60/partial_movie_files/s1/2852726489_4071516364_3387859644.mp4'
+file 'file:/home/vivi/manim_summer_2025/media/videos/RC_circuit/1080p60/partial_movie_files/s1/2852726489_1415570913_2164475677.mp4'
+file 'file:/home/vivi/manim_summer_2025/media/videos/RC_circuit/1080p60/partial_movie_files/s1/2852726489_1770107853_3094422114.mp4'

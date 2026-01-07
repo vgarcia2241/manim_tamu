@@ -1,0 +1,3 @@
+# This file is used internally by FFMPEG.
+file 'file:/home/vivi/manim_summer_2025/media/videos/RC_circuit/1080p60/partial_movie_files/ContinuousDotsOnPath/3977891868_4249220510_223132457.mp4'
+file 'file:/home/vivi/manim_summer_2025/media/videos/RC_circuit/1080p60/partial_movie_files/ContinuousDotsOnPath/2852726489_2600233705_1801151181.mp4'

@@ -1,0 +1,8 @@
+# This file is used internally by FFMPEG.
+file 'file:/home/vivi/manim_summer_2025/media/videos/skier_problem/1080p60/partial_movie_files/s2/3977891868_3760226112_223132457.mp4'
+file 'file:/home/vivi/manim_summer_2025/media/videos/skier_problem/1080p60/partial_movie_files/s2/2852726489_4071516364_4126272102.mp4'
+file 'file:/home/vivi/manim_summer_2025/media/videos/skier_problem/1080p60/partial_movie_files/s2/2852726489_1486847504_3306860612.mp4'
+file 'file:/home/vivi/manim_summer_2025/media/videos/skier_problem/1080p60/partial_movie_files/s2/2852726489_4071516364_862184638.mp4'
+file 'file:/home/vivi/manim_summer_2025/media/videos/skier_problem/1080p60/partial_movie_files/s2/2852726489_3022502169_3169581966.mp4'
+file 'file:/home/vivi/manim_summer_2025/media/videos/skier_problem/1080p60/partial_movie_files/s2/2852726489_4071516364_3980625080.mp4'
+file 'file:/home/vivi/manim_summer_2025/media/videos/skier_problem/1080p60/partial_movie_files/s2/2852726489_4112886110_520226917.mp4'
