@@ -218,23 +218,30 @@ class s2(Scene):
         
 class s3(Scene):
     def construct(self):
-        v1 = Arrow(ORIGIN, ORIGIN + 3*DOWN, color = BLUE, stroke_width = 10, buff = 0)
-        v2 = Arrow(ORIGIN, ORIGIN + 3*RIGHT, color = RED, stroke_width = 10, buff = 0)
         point = Dot(ORIGIN, stroke_width = line_weight)
-        theta = ValueTracker(4*PI/3) #zero point is to the right
-        v2.rotate(theta.get_value(), about_point=ORIGIN)
-        
-        #component vectors
-        '''
-        n_force = always_redraw(
-            lambda: Arrow(square.get_center(), square.get_center() + [-2*(1 - thetaTracker.get_value() / 90.0 + 0.15)*np.sin(thetaTracker.get_value()*DEGREES),2*(1 - thetaTracker.get_value() / 90.0 + 0.15)*np.cos(thetaTracker.get_value()*DEGREES),0], buff=0, color = GREEN)
+        theta = ValueTracker(230) #zero point is to the right
+        v1 = Arrow(ORIGIN, ORIGIN + 3*DOWN, color = BLUE, stroke_width = 10, buff = 0)
+        v2 = always_redraw(
+            lambda:Arrow(ORIGIN, ORIGIN + [3*np.cos(theta.get_value()*DEGREES), 3*np.sin(theta.get_value()*DEGREES),0], color = RED, stroke_width = 10, buff = 0)
         )
-        '''
-        v2_x = Arrow(ORIGIN, ORIGIN + v2.get_length()*(np.cos(theta.get_value())))
-        v2_y = Arrow(ORIGIN, ORIGIN + v2.get_length()*(np.sin(theta.get_value())))
+        #component vectors
+        v2_x = always_redraw(
+            lambda:Arrow(ORIGIN, ORIGIN + [v2.get_length()*(np.cos(theta.get_value()*DEGREES)),0,0], stroke_width = 10, buff = 0)
+        )
+        v2_y = always_redraw(
+            lambda:Arrow(ORIGIN, ORIGIN + [0,v2.get_length()*(np.sin(theta.get_value()*DEGREES)),0], stroke_width = 10, buff = 0)
+        )
+        #model bullet
+        bullet = Bullet(self,[0,0.5,0]).rotate(PI)
         
         self.play(Create(v1), Create(v2), Create(point))
-        self.wait()
-        self.play(Rotate(v2, 2*PI, about_point = ORIGIN), run_time = 1.5, rate_func = rate_functions.running_start)
+        self.wait(1.5)
+        self.play(Rotate(v2, 2*PI, about_point = ORIGIN), run_time = 1.5, rate_func = rate_functions.smooth)
         self.wait()
         self.play(FadeIn(v2_x), FadeIn(v2_y))
+        self.wait()
+        self.play(theta.animate.set_value(200))
+        self.wait()
+        self.play(theta.animate.set_value(230))
+        self.wait()
+        self.play(theta.animate.set_value(180), FadeIn(bullet))
