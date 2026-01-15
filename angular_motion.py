@@ -180,7 +180,7 @@ class s2(Scene):
             lambda:Arrow(bullet.get_center(), d_pivot.get_center())
         )
         r_lab = always_redraw(
-            lambda: MathTex(r"r", font_size = 0.65*fontsize).next_to(r_vec, RIGHT)
+            lambda: MathTex(r"r", font_size = 0.65*fontsize).next_to(r_vec, DR).shift([-1.5,0.75,0])
         )
         
         self.play(Write(t1_1))
@@ -191,37 +191,39 @@ class s2(Scene):
         self.wait()
         self.play(Create(r_vec), Write(r_lab))
         self.wait()
+        self.play(FadeOut(r_lab))
+        
+        '''
         self.play(FadeOut(t1_1), FadeOut(box), FadeOut(r_lab))
         self.play(g1.animate.scale((1/0.65)).shift(ORIGIN - disk.get_center()))
         self.wait()
+        '''
+        
+        g1_1 = VGroup(bullet, motion)
+        self.play(g1_1.animate.shift([-3.6,0,0]), run_time = 1.5)
+        self.wait()
+        self.play(g1_1.animate.shift([3.5,0,0]), run_time = 1.5)
+        self.wait()
+        
+        '''
+        self.play(g1.animate.scale(0.65).move_to(box.get_center()), FadeIn(box))
+        '''
+        d_center = Dot(disk.get_center(), stroke_width = line_weight)
+        
+        self.play(Indicate(t1_1[0]))
+        self.wait()
+        self.play(g1_1.animate.shift([d_pivot.get_x() - bullet.get_x(),0,0]))
+        self.wait()
         
         impact_line = Line(bullet.get_center(),bullet.get_center() - [0,bullet.get_y() - d_center.get_y(),0])
-        impact_parameter = BraceLabel(impact_line,r"b", RIGHT, buff = 1*MED_LARGE_BUFF, font_size= fontsize)
+        impact_parameter = BraceLabel(impact_line,r"b", RIGHT, buff = 3*SMALL_BUFF, font_size= fontsize)
         impact_parameter.submobjects[1].set_color(YELLOW)
         
-        self.play(FadeIn(impact_parameter), FadeOut(motion))
-        self.wait()
-        d_center = Dot(disk.get_center(), stroke_width = line_weight)
-        g2 = VGroup(bullet, impact_parameter)
-        self.play(FadeIn(d_center), g2.animate.shift([disk.get_x() - bullet.get_x(), 0, 0]), run_time = 1.5)
-        self.wait()
-        
-        motion.set_color(BLUE)
-        dist = Arrow(bullet.get_bottom(), bullet.get_bottom() + 2*DOWN, color = RED)
         piv_dist_line = Line(d_center, d_pivot)
-        piv_dist = BraceLabel(piv_dist_line,"d",LEFT, font_size = fontsize)
+        piv_dist = BraceLabel(piv_dist_line,"d",RIGHT, font_size = fontsize, buff = 3*SMALL_BUFF)
         piv_dist.submobjects[1].set_color(YELLOW)
         
-        self.play(FadeIn(piv_dist))
-        
-        g1.add(piv_dist, d_center, impact_parameter)
-        g1.remove(motion)
-        
-        self.wait()
-        self.play(g1.animate.scale(0.65).move_to(box.get_center()), FadeIn(box))
-        
-        self.wait()
-        self.play(FadeIn(t1_1))
+        self.play(FadeIn(impact_parameter), FadeIn(piv_dist))
         self.wait()
         self.play(TransformMatchingTex(t1_1, t1_2))
         self.wait()
