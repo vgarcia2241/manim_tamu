@@ -175,11 +175,23 @@ class s2(Scene):
         self.wait()
         self.play(g1.animate.scale(0.65).move_to(box.get_center()), Create(box))
         self.wait()
+        
+        r_vec = always_redraw(
+            lambda:Arrow(bullet.get_center(), d_pivot.get_center())
+        )
+        r_lab = always_redraw(
+            lambda: MathTex(r"r", font_size = 0.65*fontsize).next_to(r_vec, RIGHT)
+        )
+        
         self.play(Write(t1_1))
         self.wait()
         self.play(Succession(Indicate(t1_1[3]), Indicate(t1_1[4])), run_time = 3)
         self.wait()
-        self.play(FadeOut(t1_1), FadeOut(box))
+        self.play(Indicate(t1_1[1]))
+        self.wait()
+        self.play(Create(r_vec), Write(r_lab))
+        self.wait()
+        self.play(FadeOut(t1_1), FadeOut(box), FadeOut(r_lab))
         self.play(g1.animate.scale((1/0.65)).shift(ORIGIN - disk.get_center()))
         self.wait()
         
