@@ -232,25 +232,34 @@ class s2(Scene):
         
 class s3(Scene):
     def construct(self):
-        point = Dot(ORIGIN, stroke_width = line_weight)
+        center_point = ORIGIN + [0,-1,0]
+        point = Dot(center_point, stroke_width = line_weight)
         theta = ValueTracker(230) #zero point is to the right
-        v1 = Arrow(ORIGIN, ORIGIN + 3*DOWN, color = BLUE, stroke_width = 10, buff = 0)
+        v1 = Arrow(center_point, center_point + 2.5*DOWN, color = BLUE, stroke_width = 10, buff = 0)
         v2 = always_redraw(
-            lambda:Arrow(ORIGIN, ORIGIN + [3*np.cos(theta.get_value()*DEGREES), 3*np.sin(theta.get_value()*DEGREES),0], color = RED, stroke_width = 10, buff = 0)
+            lambda:Arrow(center_point, center_point + [2.5*np.cos(theta.get_value()*DEGREES), 2.5*np.sin(theta.get_value()*DEGREES),0], color = RED, stroke_width = 10, buff = 0)
         )
         #component vectors
         v2_x = always_redraw(
-            lambda:Arrow(ORIGIN, ORIGIN + [v2.get_length()*(np.cos(theta.get_value()*DEGREES)),0,0], stroke_width = 10, buff = 0)
+            lambda:Arrow(center_point, center_point + [v2.get_length()*(np.cos(theta.get_value()*DEGREES)),0,0], stroke_width = 10, buff = 0)
         )
         v2_y = always_redraw(
-            lambda:Arrow(ORIGIN, ORIGIN + [0,v2.get_length()*(np.sin(theta.get_value()*DEGREES)),0], stroke_width = 10, buff = 0)
+            lambda:Arrow(center_point, center_point + [0,v2.get_length()*(np.sin(theta.get_value()*DEGREES)),0], stroke_width = 10, buff = 0)
         )
         #model bullet
         bullet = Bullet(self,[0,0.5,0]).rotate(PI)
+        v1_lab = MathTex(r"v_1", font_size = fontsize, color = YELLOW).next_to(v1, RIGHT)
+        v2_lab = MathTex(r"v_2", font_size = fontsize, color = YELLOW).next_to(v2, LEFT)
         
-        self.play(Create(v1), Create(v2), Create(point))
-        self.wait(1.5)
-        self.play(Rotate(v2, 2*PI, about_point = ORIGIN), run_time = 1.5, rate_func = rate_functions.smooth)
+        self.play(
+            Create(v1), Write(v1_lab), 
+        )
+        self.play(
+            Create(v2), Write(v2_lab), Create(point)
+        )
+        self.wait(2)
+        self.play(FadeOut(v2_lab), FadeOut(v1_lab))
+        #self.play(Rotate(v2, 2*PI, about_point = center_point), run_time = 1.5, rate_func = rate_functions.smooth)
         self.wait()
         self.play(FadeIn(v2_x), FadeIn(v2_y))
         self.wait()
@@ -258,4 +267,16 @@ class s3(Scene):
         self.wait()
         self.play(theta.animate.set_value(230))
         self.wait()
-        self.play(theta.animate.set_value(180), FadeIn(bullet))
+        self.play(theta.animate.set_value(60))
+        self.wait()
+        
+        t1 = MathTex(r"v_1 \times v_2 = |v_1||v_2|~sin \theta", font_size = fontsize)
+        t1.to_edge(UP, buff = 1.2*LARGE_BUFF)
+        t2 = MathTex(r"v_1 \times v_2 = |v_1||v_2|")
+
+        self.play(Write(t1))
+        self.wait()
+        self.play(Indicate(v2_x), run_time = 1.5)
+        self.wait()
+        self.play(theta.animate.set_value(180))
+        self.wait()
