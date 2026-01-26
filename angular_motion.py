@@ -230,7 +230,7 @@ class s2(Scene):
 
         group_all = Group(*self.mobjects)
         self.play(*[FadeOut(i) for i in self.mobjects])
-        self.wait(2)
+        self.wait(3)
         
         ###################################################
         #end of s2
@@ -247,7 +247,7 @@ class s2(Scene):
         self.wait()
         self.play(TransformMatchingShapes(t2,t3))
         
-        self.wait(2)
+        self.wait(3)
         
         ###################################################
         #end of s4
@@ -366,5 +366,5 @@ class s3(Scene):
         self.play(TransformMatchingShapes(t1,t2))
         
         self.wait()
-        self.play(*[FadeOut(i) for i in self.mobjects])        
+        self.play(*[FadeOut(i) for i in self.mobjects])
         

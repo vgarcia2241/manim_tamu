@@ -18,5 +18,6 @@ file 'file:/home/vivi/manim_summer_2025/media/videos/angular_motion/1080p60/part
 file 'file:/home/vivi/manim_summer_2025/media/videos/angular_motion/1080p60/partial_movie_files/s3/2852726489_667144672_2135261612.mp4'
 file 'file:/home/vivi/manim_summer_2025/media/videos/angular_motion/1080p60/partial_movie_files/s3/2852726489_2792395428_3085868698.mp4'
 file 'file:/home/vivi/manim_summer_2025/media/videos/angular_motion/1080p60/partial_movie_files/s3/2852726489_667144672_2546912748.mp4'
-file 'file:/home/vivi/manim_summer_2025/media/videos/angular_motion/1080p60/partial_movie_files/s3/2852726489_4255801458_1059432595.mp4'
+file 'file:/home/vivi/manim_summer_2025/media/videos/angular_motion/1080p60/partial_movie_files/s3/2852726489_3383213700_1059432595.mp4'
 file 'file:/home/vivi/manim_summer_2025/media/videos/angular_motion/1080p60/partial_movie_files/s3/2852726489_667144672_1263098704.mp4'
+file 'file:/home/vivi/manim_summer_2025/media/videos/angular_motion/1080p60/partial_movie_files/s3/2852726489_1629400798_1861982275.mp4'
