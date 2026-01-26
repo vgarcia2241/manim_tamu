@@ -135,8 +135,7 @@ class s1(Scene):
 
         self.wait()
         self.play(*[FadeOut(i) for i in self.mobjects])
-        
-        
+             
 class s2(Scene):
     def construct(self):
         t1 = MathTex(r"Energy")
@@ -176,6 +175,7 @@ class s2(Scene):
         self.play(g1.animate.scale(0.65).move_to(box.get_center()), Create(box))
         self.wait()
         
+        b_center = bullet.get_center() #saves starting position of bullet after being scaled down
         r_vec = always_redraw(
             lambda:Arrow(bullet.get_center(), d_pivot.get_center())
         )
@@ -228,6 +228,89 @@ class s2(Scene):
         self.play(TransformMatchingTex(t1_1, t1_2))
         self.wait()
 
+        group_all = Group(*self.mobjects)
+        self.play(*[FadeOut(i) for i in self.mobjects])
+        self.wait(2)
+        
+        ###################################################
+        #end of s2
+        #reusing these objects to finish scene4
+        ###################################################
+        
+        self.play(FadeIn(group_all))
+        self.wait()
+        
+        t2 = MathTex(r"=(b+d)(mv)").move_to(t1_2)
+        t3 = MathTex(r"=12~\text{kg} \cdot \text{m}^{2}").align_to(t2, LEFT)
+        
+        self.play(TransformMatchingShapes(t1_2,t2))
+        self.wait()
+        self.play(TransformMatchingShapes(t2,t3))
+        
+        self.wait(2)
+        
+        ###################################################
+        #end of s4
+        ###################################################
+        MathTex.set_default(font_size=65)
+        
+        t4 = MathTex(r"L_f =~?").align_to(t3, LEFT)
+        t4_2 = MathTex(r"L_f =~ I_{tot} \times \omega _f").align_to(t4, LEFT)
+        t4_3 = MathTex(r"L_f =~ (I_{tot})(\omega_f)").align_to(t4_2,LEFT)
+        t4_4 = MathTex(r"\frac{L_f}{I_{tot}} =~ \omega_f").align_to(t4_3,LEFT)
+        final = MathTex(r"\omega_f =~ 13.7~\text{rad/s}").move_to(t4_4).shift([1,0,0])
+        t5 = MathTex(r"I_{tot} =~ I_{bullet} + I_{disk}").next_to(t4_2,DOWN, buff = 0.75)
+        #t5_2 = MathTex(r"I_{tot} =~ m_b(l^2) + I_{disk}").move_to(t5)
+        t6 = MathTex(r"I_{bullet} =~ m_b l^2").move_to(t5)
+        t6_2 = MathTex(r"I_{bullet} =~ 0.064~\text{kg}\cdot\text{m}^2").move_to(t6)
+        t7 = MathTex(r"I_{disk} =~ \frac{1}{2} M R^2").move_to(t6)
+        t7_2 = MathTex(r"I_{disk} =~ \frac{1}{2} M R^2 + Md^2").move_to(t6)
+        t7_3 = MathTex(r"I_{disk} =~ 0.81~\text{kg}\cdot\text{m}^2").move_to(t6)
+        
+        g2 = Group(t3, impact_parameter, piv_dist, motion, r_vec, bullet)
+        g3 = VGroup(bullet, disk, d_pivot)
+
+        self.play(FadeOut(g2))
+        bullet.move_to(b_center)
+        self.play(FadeIn(bullet), Write(t4))
+        self.wait()
+        self.play(bullet.animate.shift([-3.3,0,0]))
+        self.play(Rotate(g3,PI/6,about_point=d_pivot.get_center()), run_time=1.5)
+        self.wait()
+        self.play(TransformMatchingShapes(t4,t4_2), 
+                  Rotate(g3,-PI/6, about_point=d_pivot.get_center()), 
+                  run_time=1.5)
+        self.wait()
+        self.play(Write(t5))
+        self.wait()
+        self.play(TransformMatchingTex(t5,t6))
+        self.wait()
+
+        l_line = DashedLine(bullet.get_center(), d_pivot.get_center(), buff = 1.8*SMALL_BUFF)
+        l_label = MathTex(r"l").next_to(l_line, RIGHT)
+        self.play(FadeIn(l_line), FadeIn(l_label))
+        self.wait()
+        self.play(TransformMatchingShapes(t6,t6_2))
+        self.wait()
+        self.play(FadeOut(t6_2))
+        self.wait()
+        self.play(FadeIn(t7))
+        self.wait()
+        self.play(TransformMatchingShapes(t7,t7_2))
+        self.wait()
+        self.play(TransformMatchingShapes(t7_2,t7_3))
+        self.wait()
+        self.play(FadeOut(t7_3))
+        self.wait()
+        self.play(TransformMatchingShapes(t4_2,t4_3))
+        self.wait()
+        self.play(TransformMatchingShapes(t4_3,t4_4))
+        self.wait()
+        self.play(TransformMatchingShapes(t4_4,final))
+        self.wait()
+        self.play(Circumscribe(final), run_time = 1.5)
+        
+        self.wait()
         self.play(*[FadeOut(i) for i in self.mobjects])
         
 class s3(Scene):
@@ -267,16 +350,21 @@ class s3(Scene):
         self.wait()
         self.play(theta.animate.set_value(230))
         self.wait()
-        self.play(theta.animate.set_value(60))
+        self.play(theta.animate.set_value(60), run_time=1.5)
         self.wait()
         
         t1 = MathTex(r"v_1 \times v_2 = |v_1||v_2|~sin \theta", font_size = fontsize)
         t1.to_edge(UP, buff = 1.2*LARGE_BUFF)
-        t2 = MathTex(r"v_1 \times v_2 = |v_1||v_2|")
+        t2 = MathTex(r"v_1 \times v_2 = |v_1||v_2|").move_to(t1)
 
         self.play(Write(t1))
         self.wait()
-        self.play(Indicate(v2_x), run_time = 1.5)
+        self.play(Indicate(v2_x), run_time = 2)
         self.wait()
         self.play(theta.animate.set_value(180))
         self.wait()
+        self.play(TransformMatchingShapes(t1,t2))
+        
+        self.wait()
+        self.play(*[FadeOut(i) for i in self.mobjects])        
+        
