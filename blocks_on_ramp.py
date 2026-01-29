@@ -110,28 +110,47 @@ class s1(Scene): #Initial scene
             FadeOut(g2),
             original.animate.shift([0,0.75,0])
         )
-        self.wait()
+        self.wait(2)
         
-        #_______________________________________________________________________
-        # end of paragraph 1 ###################################################
+#_______________________________________________________________________
+# end of paragraph 1 ###################################################
         
         for i in original:
             self.play(Indicate(i, scale_factor=1.1), run_time=0.7)
         self.wait()
 
-        scale_factor = ValueTracker(0)
+        val1 = ValueTracker(0)
+        val2 = ValueTracker(0)
         friction2 = always_redraw(
-            lambda: Arrow(ramp_line.point_from_proportion(0.65), ramp_line.point_from_proportion(0.65) + scale_factor.get_value()*ramp_line.get_unit_vector())
+            lambda: Arrow(ramp_line.point_from_proportion(0.65), ramp_line.point_from_proportion(0.65) + val1.get_value()*ramp_line.get_unit_vector())
         )
         friction1 = always_redraw(
-            lambda: Arrow(block2.point_from_proportion(0.2), block2.point_from_proportion(0.2) - scale_factor.get_value()*ramp_line.get_unit_vector())
+            lambda: Arrow(block2.point_from_proportion(0.2), block2.point_from_proportion(0.2) - val1.get_value()*ramp_line.get_unit_vector())
         )
-        self.play(
-            Create(friction1), Create(friction2)
+        norm1 = always_redraw(
+            lambda: Arrow(block2.point_from_proportion(0.16), block2.point_from_proportion(0.16) - ramp_direction*val2.get_value(), buff=0)
         )
-        self.play(scale_factor.animate.set_value(3))
+        norm1_1 = always_redraw(
+            lambda: Arrow(block2.point_from_proportion(0.2), block2.point_from_proportion(0.2) + ramp_direction*val2.get_value(), buff=0)
+        )
+        norm2 = always_redraw(
+            lambda: Arrow(ramp_line.point_from_proportion(0.65), ramp_line.point_from_proportion(0.65) + ramp_direction*val2.get_value(), buff=0)
+        )
+        norm2_1 = always_redraw(
+            lambda: Arrow(ramp_line.point_from_proportion(0.69), ramp_line.point_from_proportion(0.69) - ramp_direction*val2.get_value(), buff=0)
+        )
+        
+        self.add(friction1, friction2, norm1, norm1_1, norm2, norm2_1)
+        self.play(val1.animate.set_value(3))
+        self.wait(0.3)
+        self.play(val1.animate.set_value(-2))
+        self.wait(0.3)
+        self.play(val1.animate.set_value(0))
+        self.wait(0.3)
+        self.play(val2.animate.set_value(0.75))
         self.wait()
-        self.play(scale_factor.animate.set_value(-2))
-        self.wait()
-        self.play(scale_factor.animate.set_value(3.5))
-        self.wait()
+        self.play(val2.animate.set_value(0))
+        self.wait(2)
+        
+#________________________________________________
+# end of paragraph 2
