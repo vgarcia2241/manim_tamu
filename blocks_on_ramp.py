@@ -3,6 +3,8 @@ import numpy as np
 
 MathTex.set_default(font_size = 70)
 MathTex.set_default(stroke_width=2.5)
+#Tex.set_default(font_size=60*(1/0.3))
+Tex.set_default(stroke_width = 1)
 
 def Outline(self,obj):
     '''
@@ -11,6 +13,24 @@ def Outline(self,obj):
     temp = obj.copy()
     temp.set_fill(color=None, opacity=0).set_stroke(width=DEFAULT_STROKE_WIDTH, color=WHITE)
     return temp
+
+def Check_Point(self, text): #create obj with text and box for checklist
+    box = Square(0.7)
+    t1 = Tex(text)
+    g_return = VGroup(box,t1).arrange(RIGHT, buff = 0.2)
+    return g_return
+    
+def Check(self, bol): #create check or X, depends on true or false
+    if(bol): #return check
+        line1 = Line([-0.5,0,0], [0,-0.5,0])
+        line2 = Line([0,-0.5,0],[1,1,0])
+        g_return = VGroup(line1, line2).scale(0.35).set_stroke(width = 5)
+        return g_return
+    else: #return X
+        line1 = Line([-1,1,0],[1,-1,0])
+        line2 = Line([-1,-1,0],[1,1,0])
+        g_return = VGroup(line1, line2).scale(0.3).set_stroke(width = 5)
+        return g_return
 
 class s1(Scene): #Initial scene        
     def construct(self):
@@ -194,15 +214,53 @@ class s2(MovingCameraScene):
         line2 = Line(point2, pointB)
         line1 = Line(point1,pointA)
         
+        #block1 force/motion lines
+        MathTex.set_default(font_size = 60)
+        MathTex.set_default(stroke_width=1)
+        motion1 = Arrow(block1.point_from_proportion(p1), block1.point_from_proportion(p1)-1*ramp_line.get_unit_vector(), buff=0, color=WHITE)
+        motion1_lab = MathTex(r"a", color=WHITE).next_to(motion1, UP, buff=-0.05).shift([0.3,0,0])
+        gravity = Arrow(block1.get_center(), block1.get_center() + 1.5*DOWN, buff=0, color = BLUE)
+        f_g = MathTex(r"F_g", color = BLUE, font_size=40).next_to(gravity, LEFT, buff=0.1)
+        
+        #checklist
+        t1 = Tex(r"Checklist:", font_size=50)
+        t_list = ["Gravity","Normal","Friction","Tension","Spring","Other","Motion"]
+        g_list = VGroup()
+        for i in range(0,7):
+            g_list.add(Check_Point(self, t_list[i]))
+        g_list.arrange_in_grid(4,2, flow_order='dr', cell_alignment=[-1,0,0], buff = 0.4).scale(0.5).next_to(block1,RIGHT, buff = 0.5)
+        pos_list = []
+        bol_list = [True,True,True,True,True,False,True]
+        g_check = VGroup()
+        for i in range(0,7):
+            pos_list.append(g_list[i][0].get_center())
+            g_check.add(Check(self, bol_list[i]).move_to(pos_list[i]).scale(0.5))        
+        t1.next_to(g_list, UP)
+        
+        #mojects groups for outlining
         original = VGroup(ramp, block1, block2, disk, stick, line2, line1)
         outlined = VGroup()
         for i in original:
             outlined.add(Outline(self,i))
         outlined[1] = original[1]
         
+        #animation
         self.add(original)
+        self.camera.frame.save_state()
+        #self.play(Restore(self.camera.frame)) #used to restore to fullscreen
         self.wait()
         self.play(
-            self.camera.frame.animate.move_to(block1.copy().shift([1,0,0])).set(width=3*block1.width),
+            self.camera.frame.animate.move_to(block1.copy().shift([1.5,0,0])).set(width=3*block1.width),
             TransformMatchingShapes(original,outlined)
         )
+        self.wait()
+        self.play(Create(motion1), Write(motion1_lab))
+        self.wait()
+        self.play(Write(t1))
+        self.wait()
+        self.play(Write(g_list))
+        self.wait()
+        self.play(Create(gravity), Write(f_g))
+        
+
+        
