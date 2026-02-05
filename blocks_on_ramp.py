@@ -189,8 +189,6 @@ class s2(MovingCameraScene):
         ramp_direction[1] *= -1
         ramp_direction = ramp_direction / np.linalg.norm(ramp_direction)
         
-        normal = Arrow(ramp_line.point_from_proportion(0.5), ramp_line.point_from_proportion(0.5)+3*ramp_direction, buff=0)
-        
         #setting up blocks
         block_dim = [1,4,1,2] #setting dimensions here should allow for easy size changing
         block2 = Rectangle(BLUE, block_dim[0], block_dim[1]).set_stroke(width=0.1).set_fill(BLUE, opacity=1)
@@ -221,6 +219,16 @@ class s2(MovingCameraScene):
         motion1_lab = MathTex(r"a", color=WHITE).next_to(motion1, UP, buff=-0.05).shift([0.3,0,0])
         gravity = Arrow(block1.get_center(), block1.get_center() + 1.5*DOWN, buff=0, color = BLUE)
         f_g = MathTex(r"F_g", color = BLUE, font_size=40).next_to(gravity, LEFT, buff=0.1)
+        normal = Arrow(block1.get_center(), block1.get_center()+1.5*ramp_direction, buff=0, color=GREEN)
+        f_n = MathTex(r"F_n", font_size = 40, color = GREEN).next_to(normal, UL, buff = -0.25)
+        contact1 = Line(block1.point_from_proportion(0.5),block1.point_from_proportion(0.5 + (block_dim[3]/(2*block_dim[2] + 2*block_dim[3]))), buff=0)
+        frictionA = always_redraw(
+            lambda: Arrow(block1.get_center(), block1.get_center() + 1.5*ramp_line.get_unit_vector(), buff=0, color=YELLOW)
+        )
+        frictionB = always_redraw(
+            lambda: Arrow(block1.get_center(), block1.get_center() - 1.5*ramp_line.get_unit_vector(), buff=0, color=YELLOW)
+        )
+        f_f = MathTex(r"F_f", color=YELLOW, font_size = 40).move_to(block1.get_center()).shift(0.25*ramp_direction)
         
         #checklist
         t1 = Tex(r"Checklist:", font_size=50)
@@ -236,6 +244,10 @@ class s2(MovingCameraScene):
             pos_list.append(g_list[i][0].get_center())
             g_check.add(Check(self, bol_list[i]).move_to(pos_list[i]).scale(0.5))        
         t1.next_to(g_list, UP)
+        
+        #variables
+        mu2 = MathTex(r"\mu_2", font_size=40).move_to(ramp_line.point_from_proportion(0.65)).rotate(ramp_line.get_angle())
+        mu1 = MathTex(r"\mu_1", font_size=40).move_to(block2.point_from_proportion(0.27)).rotate(ramp_line.get_angle()).shift(-0.2*ramp_direction)
         
         #mojects groups for outlining
         original = VGroup(ramp, block1, block2, disk, stick, line2, line1)
@@ -258,9 +270,35 @@ class s2(MovingCameraScene):
         self.wait()
         self.play(Write(t1))
         self.wait()
-        self.play(Write(g_list))
+        self.play(Write(g_list), FadeOut(motion1), FadeOut(motion1_lab))
         self.wait()
         self.play(Create(gravity), Write(f_g))
-        
+        self.play(Create(g_check[0]))
+        self.wait()
+        self.play(FadeOut(gravity), FadeOut(f_g))
+        self.play(ShowPassingFlash(contact1.copy().set_color(GREEN), 1.5), run_time=1.5)
+        self.wait()
+        self.play(ShowPassingFlash(outlined[2].copy().set_color(YELLOW), 0.4), run_time=1.5)
+        self.wait()
+        self.play(
+            Create(normal), Write(f_n))
+        self.play(Create(g_check[1]))
+        self.wait()
+        self.play(FadeIn(mu1))
+        self.wait()
+        self.play(FadeOut(normal), FadeOut(f_n))
+        self.play(
+            Create(frictionA), 
+            Create(frictionB), 
+            Write(f_f)
+            )
+        self.wait()
+        self.play(
+            outlined[2].animate.shift(0.3*ramp_line.get_unit_vector()),
+            block1.animate.shift(-0.3*ramp_line.get_unit_vector()),
+            run_time=1.5,
+            rate_func = rate_functions.linear)
+        self.wait()
+        self.play(FadeOut(frictionA))
 
         
