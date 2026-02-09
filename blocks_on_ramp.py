@@ -228,7 +228,11 @@ class s2(MovingCameraScene):
         frictionB = always_redraw(
             lambda: Arrow(block1.get_center(), block1.get_center() - 1.5*ramp_line.get_unit_vector(), buff=0, color=YELLOW)
         )
-        f_f = MathTex(r"F_f", color=YELLOW, font_size = 40).move_to(block1.get_center()).shift(0.25*ramp_direction)
+        f_f = always_redraw(
+            lambda: MathTex(r"F_f", color=YELLOW, font_size = 40).move_to(block1.get_center()).shift(0.25*ramp_direction)
+        )
+        tension = motion1.copy().set_color(ORANGE)
+        f_t = MathTex(r"F_T", font_size=40, color=ORANGE).next_to(tension, UP, buff=-0.05).shift([0.3,0,0])
         
         #checklist
         t1 = Tex(r"Checklist:", font_size=50)
@@ -238,7 +242,7 @@ class s2(MovingCameraScene):
             g_list.add(Check_Point(self, t_list[i]))
         g_list.arrange_in_grid(4,2, flow_order='dr', cell_alignment=[-1,0,0], buff = 0.4).scale(0.5).next_to(block1,RIGHT, buff = 0.5)
         pos_list = []
-        bol_list = [True,True,True,True,True,False,True]
+        bol_list = [True,True,True,True,False,False,True]
         g_check = VGroup()
         for i in range(0,7):
             pos_list.append(g_list[i][0].get_center())
@@ -290,15 +294,138 @@ class s2(MovingCameraScene):
         self.play(
             Create(frictionA), 
             Create(frictionB), 
-            Write(f_f)
+            Write(f_f),
+            FadeOut(mu1)
             )
         self.wait()
         self.play(
             outlined[2].animate.shift(0.3*ramp_line.get_unit_vector()),
             block1.animate.shift(-0.3*ramp_line.get_unit_vector()),
+            outlined[6].animate.shift(-0.3*ramp_line.get_unit_vector()),
             run_time=1.5,
             rate_func = rate_functions.linear)
         self.wait()
-        self.play(FadeOut(frictionA))
+        self.play(FadeOut(frictionB))
+        self.play(
+            Write(g_check[2]),
+            outlined[2].animate.shift(-0.3*ramp_line.get_unit_vector()),
+            block1.animate.shift(0.3*ramp_line.get_unit_vector()),
+            outlined[6].animate.shift(0.3*ramp_line.get_unit_vector())
+            )
+        self.wait()
+        self.play(FadeOut(frictionA), FadeOut(f_f))
+        self.wait()
+        self.play(Create(tension), Write(f_t))
+        self.play(Create(g_check[3]))
+        self.wait()
+        self.play(Indicate(tension), run_time=1.5)
+        self.wait()
+        self.play(FadeOut(tension), FadeOut(f_t))
+        self.play(Create(g_check[4]), Create(g_check[5]))
+        self.wait()
+        self.play(Create(g_check[6]))
+        self.wait(2)
+        
+        #next paragraph, end of checklist
+        
+        self.play(FadeOut(g_check), FadeOut(g_list), FadeOut(t1))
+        #self.play(self.camera.frame.animate.move_to(block1.copy()).set(width=3*block1.width))
+        axis_center = block2.point_from_proportion(0.0)
+        x_axis = Arrow(axis_center, axis_center + 1*LEFT, buff = 0)
+        y_axis = Arrow(axis_center, axis_center + 1*UP, buff = 0)
+        g_axis = VGroup(x_axis,y_axis).shift(0.3*ramp_direction + 1*RIGHT)
+        axis_center = x_axis.get_right()
+        x_axis_tex = always_redraw(
+            lambda: MathTex(r"x", font_size = 40).next_to(x_axis, LEFT, buff=0.1)
+        )
+        y_axis_tex = always_redraw(
+            lambda: MathTex(r"y", font_size = 40).next_to(y_axis, UP, buff=0.1)
+        )
+        
+        self.play(Create(g_axis), Write(x_axis_tex), Write(y_axis_tex))
+        self.wait()
+        self.play(g_axis.animate.rotate(ramp_line.get_angle(), about_point=axis_center))
+        self.wait()
+        tension.shift(0.2*ramp_direction)
+        motion1.shift(-0.2*ramp_direction)
+        self.play(Succession(
+            FadeIn(frictionA),
+            FadeIn(normal),
+            FadeIn(tension),
+            FadeIn(motion1)
+        ))
+        self.wait()
+        self.play(FadeIn(gravity))
+        self.wait()
+        self.play(Succession(Indicate(y_axis), Indicate(x_axis)), run_time=2)
+        self.wait()
+        g_fade = VGroup(x_axis, y_axis, x_axis_tex, y_axis_tex)
+        self.play(
+            FadeOut(g_fade)
+        )
+        self.wait()
+        
+        #starting forces
+        MathTex.set_default(font_size=35)
+        ta = MathTex(r"F_x:", font_size=50).move_to(t1)
+        tb = MathTex(r"F_T")
+        tc = MathTex(r"- F_{g,x}")
+        td = MathTex(r"-F_f")
+        tda = MathTex(r"-\mu_1 F_N")
+        te = MathTex(r"= m_1 a_1")
+        t_group = VGroup(tb, tc, td).arrange(RIGHT, buff=0.1).next_to(ta,DOWN)
+        te.next_to(t_group,DOWN)
+        tda.move_to(td)
+        
+        self.play(Write(ta))
+        self.wait()
+        self.play(Write(tb))
+        self.wait()
+        self.play(Write(tc))
+        self.wait()
+        self.play(Write(td))
+        self.wait()
+        self.play(Write(te))
+        self.wait()
+        self.play(Succession(Indicate(td), Indicate(tb)))
+        self.wait()
+        self.play(TransformMatchingShapes(td,tda), tb.animate.shift([-0.2,0,0]), tc.animate.shift([-0.2,0,0]))
+        self.wait()
+        g_fade = VGroup(ta, tb, tc, tda, te)
+        self.play(FadeOut(g_fade))
+        self.wait()
+        
+        ta = MathTex(r"F_y:", font_size=50).move_to(t1)
+        tb = MathTex(r"F_N")
+        tc = MathTex(r"-F_{g,y}")
+        td = MathTex(r"= 0")
+        te = MathTex(r"F_N=F_{g,y}")
+        t_group = VGroup(tb, tc).arrange(RIGHT, buff=0.1).next_to(ta,DOWN)
+        td.next_to(t_group, DOWN)
+        te.move_to(t_group)
+        
+        self.play(Write(ta))
+        self.wait()
+        self.play(Write(tb))
+        self.wait()
+        self.play(Write(tc))
+        self.wait()
+        self.play(Write(td))
+        self.wait()
+        self.play(TransformMatchingShapes(t_group,te), FadeOut(td))
+        self.wait()
+        self.play(Indicate(tension))
+        self.wait()
+        
+        g_fade = VGroup(ta, te, normal, tension, motion1, gravity, frictionA)
+        
+        self.play(FadeOut(g_fade))
+        self.play(
+            Restore(self.camera.frame),
+            TransformMatchingShapes(outlined, original),
+        )
+        outlined[1] = Outline(self, original[1])
+        self.wait()
+        
 
         
