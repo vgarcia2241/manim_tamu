@@ -425,7 +425,67 @@ class s2(MovingCameraScene):
             TransformMatchingShapes(outlined, original),
         )
         outlined[1] = Outline(self, original[1])
+        outlined[2] = original[2]
+        self.wait()
+        self.play(Indicate(block2), run_time=1.5)
+        self.wait()
+        self.play(
+            self.camera.frame.animate.move_to(block2.copy().shift([2.2,0,0])).set(width=2.4*block2.width),
+            TransformMatchingShapes(original,outlined)
+        )
         self.wait()
         
-
+        # forces on second block
+        g_list.next_to(block2,RIGHT, buff = 1).scale(1.4)
+        t1.set_font_size(70).next_to(g_list, UP, buff=0.4)
+        g_check = VGroup()
+        pos_list = []
+        for i in range(0,7):
+            pos_list.append(g_list[i][0].get_center())
+            g_check.add(Check(self, bol_list[i]).move_to(pos_list[i]).scale(0.5*1.4)) 
+        
+        #block2 force/motion lines
+        MathTex.set_default(font_size = 55)
+        MathTex.set_default(stroke_width=1)
+        motion2 = Arrow(block2.point_from_proportion(p2), block2.point_from_proportion(p2)-1*ramp_line.get_unit_vector(), buff=0, color=WHITE)
+        motion2_lab = MathTex(r"a", color=WHITE).next_to(motion2, UP, buff=-0.05).shift([0.3,0,0])
+        gravity2 = Arrow(block2.get_center(), block2.get_center() + 1.5*DOWN, buff=0, color = RED)
+        f_g2 = MathTex(r"F_g", color = RED).next_to(gravity2, LEFT, buff=0.1)
+        normal2 = Arrow(block2.get_center(), block2.get_center()+1.5*ramp_direction, buff=0, color=GREEN_B)
+        f_n2 = MathTex(r"F_{N,s}", color = GREEN_B).next_to(normal2, UR, buff= 0)
+        normal2A = Arrow(block2.get_center(), block2.get_center()-1.5*ramp_direction, buff=0, color=GREEN_B)
+        f_n2A = MathTex(r"F_{N,1}", color = GREEN_B).next_to(normal2A, DL, buff = 0)
+        
+        contact2 = Line(block2.point_from_proportion(0.5),block2.point_from_proportion(0.5 + (block_dim[1]/(2*block_dim[0] + 2*block_dim[1]))), buff=0)
+        frictionA2 = always_redraw(
+            lambda: Arrow(block2.get_center(), block2.get_center() + 1.5*ramp_line.get_unit_vector(), buff=0, color=YELLOW)
+        )
+        frictionB2 = always_redraw(
+            lambda: Arrow(block2.get_center(), block2.get_center() - 1.5*ramp_line.get_unit_vector(), buff=0, color=YELLOW)
+        )
+        f_f2 = always_redraw(
+            lambda: MathTex(r"F_f", color=YELLOW).move_to(block2.get_center()).shift(0.25*ramp_direction)
+        )
+        tension2 = motion2.copy().set_color(ORANGE)
+        f_t2 = MathTex(r"F_T", color=ORANGE).next_to(tension2, UP, buff=-0.05).shift([0.3,0,0])
+        
+        self.play(Write(g_list), Create(t1))
+        self.wait()
+        self.play(
+            Create(gravity2), 
+            Write(f_g2),
+            Write(g_check[0])
+        )
+        self.wait()
+        self.play(Create(normal2))
+        self.wait()
+        self.play(Write(f_n2))
+        self.wait()
+        self.play(
+            Create(normal2A), 
+            Write(f_n2A),
+            f_g2.animate.next_to(gravity2,RIGHT, buff=0.1)
+        )
+        self.wait()
+        
         
