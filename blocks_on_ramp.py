@@ -430,7 +430,7 @@ class s2(MovingCameraScene):
         self.play(Indicate(block2), run_time=1.5)
         self.wait()
         self.play(
-            self.camera.frame.animate.move_to(block2.copy().shift([2.2,0,0])).set(width=2.4*block2.width),
+            self.camera.frame.animate.move_to(block2.copy().shift([2.1,0,0])).set(width=2.45*block2.width),
             TransformMatchingShapes(original,outlined)
         )
         self.wait()
@@ -447,10 +447,10 @@ class s2(MovingCameraScene):
         #block2 force/motion lines
         MathTex.set_default(font_size = 55)
         MathTex.set_default(stroke_width=2)
-        motion2 = Arrow(block2.point_from_proportion(p2), block2.point_from_proportion(p2)-1*ramp_line.get_unit_vector(), buff=0, color=WHITE)
-        motion2_lab = MathTex(r"a", color=WHITE).next_to(motion2, UP, buff=-0.05).shift([0.3,0,0])
+        motion2 = Arrow(block2.get_center(), block2.get_center()+1*ramp_line.get_unit_vector(), buff=0, color=WHITE)
+        motion2_lab = MathTex(r"a", color=WHITE).next_to(motion2, ramp_line.get_unit_vector(), buff = 0.1)
         gravity2 = Arrow(block2.get_center(), block2.get_center() + 1.5*DOWN, buff=0, color = RED)
-        f_g2 = MathTex(r"F_g", color = RED).next_to(gravity2, LEFT, buff=0.05).shift([0,0.2,0])
+        f_g2 = MathTex(r"F_g", color = RED).next_to(gravity2, LEFT, buff=0.05).shift([0,0,0])
         normal2 = Arrow(block2.get_center(), block2.get_center()+1.5*ramp_direction, buff=0, color=GREEN_B)
         f_n2 = MathTex(r"F_{N,s}", color = GREEN_B).next_to(normal2, UR, buff= 0)
         normal2A = Arrow(block2.get_center(), block2.get_center()-1.5*ramp_direction, buff=0, color=GREEN_B)
@@ -459,10 +459,10 @@ class s2(MovingCameraScene):
         contact2 = Line(block2.point_from_proportion(0.5),block2.point_from_proportion(0.5 + (block_dim[1]/(2*block_dim[0] + 2*block_dim[1]))), buff=0)
         frictionA2 = Arrow(block2.get_center(), block2.get_center() - 1.5*ramp_line.get_unit_vector(), buff=0, color=YELLOW)
         frictionB2 = Arrow(block2.get_center(), block2.get_center() - 1.5*ramp_line.get_unit_vector(), buff=0, color=YELLOW)
-        f_f2 = MathTex(r"F_{f,s}", color=YELLOW).move_to(frictionB2.get_center()).shift(-0.45*ramp_direction)
-        f_f2B = MathTex(r"F_{f,1}", color=YELLOW).move_to(frictionA2.get_center()).shift(0.45*ramp_direction)
-        tension2 = motion2.copy().set_color(ORANGE)
-        f_t2 = MathTex(r"F_T", color=ORANGE).next_to(tension2, UP, buff=-0.05).shift([0.3,0,0])
+        f_f2 = MathTex(r"F_{f,s}", color=YELLOW).move_to(frictionB2.get_center()).shift(-0.75*ramp_direction - ramp_line.get_unit_vector())
+        f_f2B = MathTex(r"F_{f,1}", color=YELLOW).move_to(frictionA2.get_center()).shift(0.45*ramp_direction - ramp_line.get_unit_vector())
+        tension2 = Arrow(block2.point_from_proportion(p2),block2.point_from_proportion(p2) - 1*ramp_line.get_unit_vector(), color = ORANGE, buff=0)
+        f_t2 = MathTex(r"F_T", color=ORANGE).next_to(tension2, UP, buff=-0.05).shift([0,0.25,0])
         
         self.play(Write(g_list), Create(t1))
         self.wait()
@@ -479,13 +479,17 @@ class s2(MovingCameraScene):
         self.play(
             Create(normal2A), 
             Write(f_n2A),
-            f_g2.animate.next_to(gravity2,RIGHT, buff=0.1),
+            f_g2.animate.next_to(gravity2,RIGHT, buff=0.1).shift([0,-0.6,0]),
             Write(g_check[1])
         )
         self.wait()
         self.play(ShowPassingFlash(contact2.copy().set_color(YELLOW), time_width=1.5), run_time=1.5)
         self.wait()
-        self.play(Create(frictionB2), Write(f_f2))
+        self.play(
+            Create(frictionB2), 
+            Write(f_f2),
+            Write(g_check[2])
+        )
         self.wait()
         self.play(ShowPassingFlash(contact1.copy().set_color(YELLOW), time_width=1.5), run_time=1.5)
         self.wait()
@@ -499,7 +503,73 @@ class s2(MovingCameraScene):
             frictionA2.animate.shift(0.2*ramp_direction),
             frictionB2.animate.shift(-0.2*ramp_direction),
             f_f2.animate.shift(-0.15*ramp_direction),
-            f_f2B.animate.shift(0.2*ramp_direction)
+            f_f2B.animate.shift(0.2*ramp_direction),
         )
         self.wait()
+        self.play(
+            Create(tension2),
+            Write(f_t2),
+            Write(g_check[3])
+        )
+        self.wait()
+        self.play(Write(g_check[4]), Write(g_check[5]))
+        self.wait()
+        self.play(
+            Create(motion2), 
+            Write(motion2_lab),
+            Write(g_check[6])
+        )
+        self.wait()
+        
+        axis_center = block2.point_from_proportion(0) + [1.5,-1,0]
+        x_axis = Arrow(axis_center, axis_center + 1*LEFT, buff = 0)
+        y_axis = Arrow(axis_center, axis_center + 1*UP, buff = 0)
+        g_axis = VGroup(x_axis,y_axis).rotate(ramp_line.get_angle(), about_point=axis_center)
+        axis_center = x_axis.get_right()
+        x_axis_tex = always_redraw(
+            lambda: MathTex(r"x", font_size = 40).next_to(x_axis, LEFT, buff=0.1)
+        )
+        y_axis_tex = always_redraw(
+            lambda: MathTex(r"y", font_size = 40).next_to(y_axis, UP, buff=0.1)
+        )
+        
+        self.play(
+            FadeOut(t1),
+            FadeOut(g_list),
+            FadeOut(g_check)
+        )
+        self.wait()
+        self.play(
+            FadeIn(g_axis),
+            FadeIn(x_axis_tex),
+            FadeIn(y_axis_tex)
+        )
+        self.wait()
+        self.play(Succession(
+            Indicate(tension2),
+            Indicate(frictionA2),
+            Indicate(frictionB2),
+            Indicate(normal2),
+            Indicate(normal2A),
+            Indicate(motion2)
+        ), run_time = 3)
+        self.wait()
+        self.play(
+            FadeOut(g_axis),
+            FadeOut(x_axis_tex),
+            FadeOut(y_axis_tex)
+        )
+        self.wait()        
+
+        g_fade = Group(
+            frictionA2, frictionB2,
+            f_f2, f_f2B,
+            normal2, normal2A,
+            f_n2, f_n2A,
+            motion2, motion2_lab,
+            tension2, f_t2,
+            gravity2, f_g2
+        )
+        
+
         
