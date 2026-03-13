@@ -260,15 +260,144 @@ class s2(MovingCameraScene):
         
         #first block forces
         gravity1 = Arrow(sq1.get_bottom(), sq1.get_bottom() + 0.5*DOWN, color=ORANGE, buff=0, max_stroke_width_to_length_ratio=7)
-        f_g1 = MathTex(r"F_g", color=ORANGE).next_to(gravity1, RIGHT, buff=0)
+        f_g1 = MathTex(r"F_g", color=ORANGE).next_to(gravity1, LEFT, buff=0)
         tension1 = Arrow(sq1.get_right(), sq1.get_right() + 0.5*RIGHT, color=BLUE, buff=0, max_stroke_width_to_length_ratio=7)
         f_t1 = MathTex(r"F_T", color=BLUE).next_to(tension1, UP, buff=0)
+        normal1 = Arrow(sq1.get_top(), sq1.get_top() + 0.5*UP, color = PURPLE, buff=0, max_stroke_width_to_length_ratio=7)
+        f_n1 = MathTex(r"F_N", color=PURPLE).next_to(normal1, RIGHT, buff=0)
+        spring1 = Arrow(sq1.get_left(), sq1.get_left() + 0.5*LEFT, buff=0, color = YELLOW_D, max_stroke_width_to_length_ratio=7)
+        f_s1 = MathTex(r"F_s", color = YELLOW_D).next_to(spring1, UP, buff=0).shift([0.07,0,0])
+        friction1A = Arrow(sq1.get_left(), sq1.get_left() + 0.5*LEFT, color=RED, buff=0, max_stroke_width_to_length_ratio=7)
+        friction1B = Arrow(sq1.get_right(), sq1.get_right() + 0.5*RIGHT, color=RED, buff=0, max_stroke_width_to_length_ratio=7)
+        f_f1 = MathTex(r"F_f", color=RED).next_to(friction1B, DOWN, buff=0).set_z_index(1.1)
         
         #checklist
+        MathTex.set_default(font_size=70)
+        t1 = Tex(r"Checklist:").scale(0.35)
+        t_list = ["Gravity","Normal","Friction","Tension","Spring","Other","Motion"]
+        g_list = VGroup()
+        for i in range(0,7):
+            g_list.add(Check_Point(self, t_list[i]))
+        g_list.arrange_in_grid(4,2, flow_order='dr', cell_alignment=[-1,0,0], buff = 0.4).scale(0.28).next_to(sq1, UP, buff=0.2)
+        pos_list = []
+        bol_list = [True,True,True,True,True,False,True]
+        g_check = VGroup()
+        for i in range(0,7):
+            pos_list.append(g_list[i][0].get_center())
+            g_check.add(Check(self, bol_list[i]).move_to(pos_list[i]).scale(0.28).set_stroke(width=2))        
+        t1.next_to(g_list, UP, buff=0.2)
         
         self.play(self.camera.frame.animate.move_to(sq1.copy().shift([0,0.6,0])).set(width=10*sq1.width))
         self.wait()
-        self.play(Create(gravity1), Write(f_g1))
-        self.play(Create(tension1), Write(f_t1))
+        self.play(Write(t1), Write(g_list))
         self.wait()
+        for i in g_check:
+            self.play(Write(i), run_time=0.25)
+        self.wait()
+        self.play(FadeOut(g_check, g_list, t1))
+        self.wait()
+        self.play(Create(gravity1), Write(f_g1))
+        self.play(Create(normal1), Write(f_n1))
+        self.wait()
+        self.play(Create(tension1), Write(f_t1))
+        self.play(Create(spring1), Write(f_s1))
+        self.wait()
+        
+        #maths
+        MathTex.set_default(font_size=45)
+        ta = MathTex(r"a(x) = \text{?}").move_to(t1).shift([0,-0.5,0])
+        ta_1 = MathTex(r"a(t) = \text{?}").move_to(ta)
+        
+        self.play(Write(ta))
+        self.wait()
+        self.play(TransformMatchingShapes(ta,ta_1))
+        self.wait()
+        self.play(TransformMatchingShapes(ta_1,ta))
+        self.wait()
+        self.play(
+            FadeOut(ta)
+            #self.camera.frame.animate.move_to(sq1.copy().shift([0,0,0])).set(width=10*sq1.width)
+        )
+        self.play(
+            Create(friction1A), Create(friction1B), Write(f_f1), 
+            spring1.animate.shift([0,0.12,0]), friction1A.animate.shift([0,-0.12,0]),
+            tension1.animate.shift([0,0.12,0]), friction1B.animate.shift([0,-0.12,0]),
+            f_s1.animate.shift([0,0.12,0]), f_t1.animate.shift([0,0.12,0]),
+            f_f1.animate.shift([0,-0.25,0]), f_n1.animate.shift([0,0.1,0])
+        )
+        self.wait()
+        self.play(Indicate(friction1A), run_time=1.5)
+        self.wait()
+        self.play(Indicate(friction1B), run_time=1.5)
+        self.wait()
+        
+        #acceleration magnitude
+        tb = MathTex(r"|a(x)_+| \neq |a(x)_-|").move_to(ta)
+        
+        self.play(Write(tb))
+        self.wait()
+        self.play(
+            FadeOut(tension1, f_t1, normal1, f_n1, friction1A, friction1B, f_f1, spring1, f_s1, gravity1, f_g1, tb),
+            self.camera.frame.animate.move_to(sq1.copy().shift([0,0.8,0])).set(width=10*sq1.width)
+        )
+        self.wait()
+        
+        #forces math
+        MathTex.set_default(font_size = 22)
+        tex_title = MathTex(r"F_y:", font_size=30).next_to(sq1, UP, buff=1.45)
+        tex1 = MathTex(r"0 = F_N - m_1 g").next_to(tex_title, DOWN)
+        tex1a = MathTex(r"F_N = m_1 g").move_to(tex1)
+        
+        tex_title2 = MathTex(r"F_x:", font_size=30).move_to(tex_title)
+        tex2 = MathTex(r"m_1 a = -kx - F_f + F_T").next_to(tex_title2, DOWN)
+        tex2a = MathTex(r"m_1 a = -kx - \mu m_1 g + F_T").move_to(tex2)
+        tex2b = MathTex(r"{{F_T}} = kx + \mu m_1 g + m_1 {{a}}").move_to(tex2)
+        tex3 = MathTex(r"F_f = \mu F_N").next_to(tex2, DOWN)
+        tex3a = MathTex(r"F_f = \mu m_1 g").move_to(tex3)
+        
+        tex_g = VGroup(tex2, tex2a, tex2b, tex3, tex3a)
+        
+        self.play(Write(tex_title))
+        self.wait()
+        self.play(Write(tex1))
+        self.wait()
+        self.play(TransformMatchingShapes(tex1, tex1a))
+        self.wait()
+        self.play(
+            tex_title.animate.shift([-1.2,0,0]),
+            tex1a.animate.shift([-1.2,0,0]),
+            Write(tex_title2),
+            tex_title2.animate.shift([1,0,0])
+        )
+        tex_g.shift([1,0,0])
+        self.wait()
+        self.play(Write(tex2), Write(tex3))
+        self.wait()
+        self.play(TransformMatchingShapes(tex3, tex3a))
+        self.wait()
+        self.play(TransformMatchingShapes(tex2, tex2a))
+        self.wait()
+        self.play(TransformMatchingShapes(tex2a, tex2b))
+        self.wait()
+        self.play(Succession(Indicate(tex2b[0]), Indicate(tex2b[2])), run_time=3)
+        self.wait()
+        self.play(
+            FadeOut(tex_title, tex1a, tex_title2, tex3a),
+            tex2b.animate.next_to(sq1, UP, buff=1)
+        )
+        self.wait()
+        
+        tex2c = MathTex(r"m_2 a = m_2 g - kx - \mu m_1 g - m_1 a").move_to(tex2b)
+        tex2d = MathTex(r"(m_1 + m_2)a = m_2 g - kx - \mu m_1 g").move_to(tex2c)
+        tex2e = MathTex(r"a = \frac{m_2 g - kx - \mu m_1 g}{m_1 + m_2}").move_to(tex2d)
+    
+        self.play(TransformMatchingTex(tex2b,tex2c))
+        self.wait()
+        self.play(TransformMatchingShapes(tex2c, tex2d))
+        self.wait()
+        self.play(TransformMatchingShapes(tex2d, tex2e))
+        self.wait()
+        self.play(Circumscribe(tex2e), run_time=1.5)
+        self.wait()
+        
         
